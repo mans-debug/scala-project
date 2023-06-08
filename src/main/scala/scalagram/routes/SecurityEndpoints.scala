@@ -1,27 +1,24 @@
 package org.itis.mansur
 package scalagram.routes
 
+import scalagram.models.User
+import scalagram.models.security.{AccessToken, Password, SecurityError}
+import scalagram.security.PasswordEncode.PasswordEncoderOps
+import scalagram.security.users.{LoginOccupied, UserService, UserValidateError, UserValidator}
+import scalagram.service.SecurityService
+
+import cats.Applicative
 import cats.data.EitherT
 import cats.effect.IO
-import cats.effect.kernel.Concurrent
-import cats.implicits.{toFlatMapOps, toSemigroupKOps}
-import cats.{Applicative, Functor, Monad}
+import cats.implicits.toSemigroupKOps
 import io.circe.Decoder
 import io.circe.generic.semiauto.deriveDecoder
-import org.http4s.FormDataDecoder.formEntityDecoder
 import org.http4s.circe.jsonOf
 import org.http4s.dsl.Http4sDsl
 import org.http4s.{EntityDecoder, HttpRoutes}
-import org.itis.mansur.scalagram.models.User
-import org.itis.mansur.scalagram.models.security.{AccessToken, Password, SecurityError}
-import org.itis.mansur.scalagram.security.PasswordEncode.PasswordEncoderOps
-import org.itis.mansur.scalagram.security.users.{LoginOccupied, UserService, UserValidateError, UserValidator}
-import org.itis.mansur.scalagram.service.SecurityService
 import org.postgresql.util.PSQLException
 import org.typelevel.ci.CIString
-import tofu.Handle
 import tofu.logging.ServiceLogging.byUniversal
-import tofu.logging._
 import tofu.syntax.handle.HandleOps
 import tofu.syntax.logging._
 

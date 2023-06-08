@@ -1,10 +1,11 @@
 package org.itis.mansur
 package scalagram.dao
 
-import org.itis.mansur.scalagram.models.Role.{fromStr, strMapping}
+import scalagram.models.Role
+import scalagram.models.Role.{fromStr, strMapping}
 
 import doobie.ConnectionIO
-import org.itis.mansur.scalagram.models.Role
+import doobie.implicits._
 
 trait RoleRepo[F[_]] {
   def addRole(userId: Long, notebookId: Long, role: Role): F[Int]

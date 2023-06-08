@@ -17,11 +17,11 @@ import org.http4s.server.{Router, Server}
 import org.itis.mansur.scalagram.models.security.Password
 import tofu.logging.Logging
 
-class ServerBuilder[F[_] : Async : Sync : Logging.Make : Functor] {
+class ServerBuilder(implicit loggingMake: Logging.Make[IO], sync: Sync[IO]) {
 
-  private implicit val logging: Logging[F] = Logging.Make[F].byName("Server")
+  private implicit val logging: Logging[IO] = Logging.Make[IO].byName("Server")
 
-  def buildServer: Resource[F, Server] =
+  def buildServer: Resource[IO, Server] =
     for {
       conf <- AppConfig.getConfig
       _ <- Resource.eval(DatabaseServicesBuilder.migrateDatabase(conf.db))
@@ -31,15 +31,15 @@ class ServerBuilder[F[_] : Async : Sync : Logging.Make : Functor] {
       securityService = SecurityService.make(userRepo, transactor)
       accessTokenService = new AccessTokenService(tokenRepo)
       userService = UserService.make(userRepo, transactor)
-      userValidator = ???
+      userValidator = new UserValidatorImpl
       securityEndpoints = new SecurityEndpoints(userValidator, securityService, accessTokenService, userService)
       notebookService = NotebookService.make(NoteRepo.make, NotebookRepo.make, RoleRepo.make, transactor)
-      authMiddleware = new Middleware[F].authMiddleware
+      authMiddleware = new Middleware(accessTokenService).authMiddleware
       notesEndpoints = new NotesEndpoints(notebookService)
       httpApp = Router(
         "/" -> (securityEndpoints.getEndpoints <+> authMiddleware(notesEndpoints.notesEndpoints()))
       ).orNotFound
-      server <- BlazeServerBuilder[F]
+      server <- BlazeServerBuilder[IO]
         .bindHttp(port = conf.http.port)
         .withHttpApp(httpApp)
         .resource

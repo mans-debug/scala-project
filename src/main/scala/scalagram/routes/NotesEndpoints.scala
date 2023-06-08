@@ -9,7 +9,7 @@ import org.http4s.circe.CirceEntityCodec.circeEntityEncoder
 import org.http4s.dsl.Http4sDsl
 import org.http4s.{AuthedRoutes, EntityEncoder, Response}
 import org.itis.mansur.scalagram.models.security.AccessError
-import org.itis.mansur.scalagram.service.notes.NotebookService
+import org.itis.mansur.scalagram.service.notes.{NotebookService, noteEntityEncoder, noteListEntityEncoder, notebookEntityEncoder, notebookListEntityEncoder}
 import tofu.syntax.handle._
 
 class NotesEndpoints(notebookService: NotebookService[IO]) extends Http4sDsl[IO] {
@@ -59,7 +59,7 @@ class NotesEndpoints(notebookService: NotebookService[IO]) extends Http4sDsl[IO]
       handleAccessRequest(notebookService.removeRole(user, User(userId.toLong, "", ""), notebookId.toLong))
   }
   def handleAccessRequest[A](f: => IO[A])(implicit encoder: EntityEncoder[IO, A]): IO[Response[IO]] = {
-    f.attempt[AccessError].flatMap {
+    f.attempt.flatMap {
       case Left(value) => Forbidden()
       case Right(value) => Ok(value)
     }

@@ -12,6 +12,14 @@ object RequestForms {
 
   implicit val addNoteFormEntityEncoder: EntityDecoder[IO, AddNoteForm] = jsonOf
 
+  implicit val notebookDecoder: Decoder[Notebook] = deriveDecoder
+
+  implicit val notebookEntityEncoder: EntityDecoder[IO, Notebook] = jsonOf
+
+  implicit val noteDecoder: Decoder[Note] = deriveDecoder
+
+  implicit val noteEntityDecoder: EntityDecoder[IO, Note] = jsonOf
+
   case class AddNoteForm(title: String, content: String)
 
   implicit val editNoteFormDecoder: Decoder[EditNoteForm] = deriveDecoder

@@ -9,5 +9,5 @@ object Server extends IOApp{
 
   implicit val makeLogging: Logging.Make[IO] = Logging.Make.plain[IO]
 
-  override def run(args: List[String]): IO[ExitCode] = new ServerBuilder[IO].buildServer.use(_ => IO.never).as(ExitCode.Success)
+  override def run(args: List[String]): IO[ExitCode] = new ServerBuilder().buildServer.use(_ => IO.never).as(ExitCode.Success)
 }

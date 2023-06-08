@@ -4,7 +4,7 @@ ThisBuild / scalaVersion := "2.13.11"
 
 lazy val root = (project in file("."))
   .settings(
-    name := "Scalagram",
+    name := "scala-project",
     idePackagePrefix := Some("org.itis.mansur")
   )
 val CatsVersion = "2.7.0"
